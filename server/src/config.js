@@ -6,6 +6,7 @@ const SERVER = {
 };
 
 const DATABASE = {
+	DB_URL_CONNECTION: process.env.JAWSDB_MARIA_URL || null,
 	DB_NAME: "db_gestion",
 	DB_HOST: process.env.DB_HOST || "localhost",
 	DB_PORT: process.env.DB_PORT || 3306,

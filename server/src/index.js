@@ -1,27 +1,32 @@
-const express = require('express');
+const express = require("express");
+require("dotenv").config();
+
+const { config } = require("./config");
+// const { checkTables } = require("./utils/checkDatabase");
+
+try {
+	const db = require("./database");
+	// checkTables();
+	if (db) console.log("DB connected!!");
+} catch (error) {
+	console.error("Error in database", error);
+}
 
 const app = express();
 
+//
+const customersRoutes = require("./routes/api/customers.routes");
+const appRoutes = require("./routes/app.routes");
 
 // middlewares
-app.use(express.json())
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
+// App routes
+app.use(config.URL_BASE, appRoutes);
 
-app.use('/info', (req, res) => {
-    res.json({
-        ok: true,
-        message: {
-            title: 'Gestión Comercial (API)',
-            info: 
-            `Gestión de presupuestos para clientes.\nUrl API base: /APIv1`,
-            programmer: 'Veras Rubio & Santiago San Román',
-            copyright: `${new Date().getFullYear()}`
-        }
-    })
-}) 
-
-
+// API routes
+app.use(`${config.URL_BASE_API}/customers`, customersRoutes);
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT,() => console.log(`Server up and listenning at port ${PORT}`))
-
+app.listen(PORT, () => console.log(`Server up and listening at port ${PORT}`));

@@ -1,98 +1,40 @@
 const { Router } = require("express");
-const { config, DATABASE } = require("../../config");
-const { db } = require("../../database");
+const {
+	getAllCustomers,
+	getCustomerById,
+	createCustomer,
+	editCustomerById,
+	deleteCustomerById
+} = require("../../controlers/customer.controler");
 
-const app = Router();
-
-app.get("/all", async (req, res) => {
-	const tableName = "customers";
-
-	try {
-		const conn = await db.getConnection();
-		const data = await conn.query(`SELECT * FROM ${tableName}`);
-		if (data.length === 0)
-			return res.status(200).json({
-				ok: true,
-				data,
-				message: "No customer in DB"
-			});
-		return res.status(200).json({
-			ok: true,
-			data
-		});
-	} catch (error) {
-		res.status(500).json({
-			ok: false,
-			message: `Error reading ${tableName} table. ${error}`
-		});
-	}
-});
+const router = Router();
 
 /***
- * GET by Id
+ * GET all records
  */
-app.get("/:customerId", async (req, res) => {
-	const tableName = "customers";
-	let { customerId } = req.params;
-
-	customerId = +customerId;
-
-	try {
-		if (isNaN(customerId))
-			return res.status(400).json({
-				ok: false,
-				message: "Bad request. Customer ID must to be numeric."
-			});
-		const conn = await db.getConnection();
-		const data = await conn.query(
-			`SELECT * FROM ${tableName} WHERE id=${customerId}`
-		);
-		if (data.length === 0)
-			return res.status(404).json({
-				ok: false,
-				data,
-				message: "No customer found"
-			});
-		return res.status(200).json({
-			ok: true,
-			data
-		});
-	} catch (error) {
-		res.status(500).json({
-			ok: false,
-			message: `Error reading ${tableName} table. ${error}`
-		});
-	}
-});
+router.get("/all", getAllCustomers);
 
 /***
- * GET by name (may be partial name)
+ * GET one record by Id
  */
-app.get("/search", async (req, res) => {
-	const tableName = "customers";
-	const { name } = req.query;
+router.get("/:id", getCustomerById);
 
-	try {
-		const conn = await db.getConnection();
-		const data = await conn.query(
-			`SELECT * FROM ${tableName} WHERE name LIKE "%${name}%"`
-		);
-		if (data.length === 0)
-			return res.status(404).json({
-				ok: false,
-				data,
-				message: "No customers found"
-			});
-		return res.status(200).json({
-			ok: true,
-			data
-		});
-	} catch (error) {
-		res.status(500).json({
-			ok: false,
-			message: `Error reading ${tableName} table. ${error}`
-		});
-	}
-});
+/**
+ * POST
+ * Create a new customer
+ */
+router.post("/new", createCustomer);
 
-module.exports = app;
+/**
+ * PUT
+ * Edit a record by id
+ */
+router.put("/:id", editCustomerById);
+
+/**
+ * DELETE
+ * Delete a record by id
+ */
+router.delete("/:id", deleteCustomerById);
+
+module.exports = router;

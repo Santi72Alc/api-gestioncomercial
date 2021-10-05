@@ -1,32 +1,34 @@
 const express = require("express");
+const morgan = require("morgan");
+const path = require("path");
 require("dotenv").config();
-
-const { config } = require("./config");
-// const { checkTables } = require("./utils/checkDatabase");
-
-try {
-	const db = require("./database");
-	// checkTables();
-	if (db) console.log("DB connected!!");
-} catch (error) {
-	console.error("Error in database", error);
-}
 
 const app = express();
 
-//
+const { config, SERVER } = require("./config");
+
+// Make ready the Database
+require("./database");
+
+// Importing routes
 const customersRoutes = require("./routes/api/customers.routes");
 const appRoutes = require("./routes/app.routes");
 
 // middlewares
 app.use(express.json());
+app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
+
+/* ROUTES */
 // App routes
 app.use(config.URL_BASE, appRoutes);
 
 // API routes
-app.use(`${config.URL_BASE_API}/customers`, customersRoutes);
+app.use(path.join(config.URL_BASE_API, "customers"), customersRoutes);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server up and listening at port ${PORT}`));
+// Starting the server
+app.set("port", SERVER.PORT);
+app.listen(app.get("port"), () =>
+	console.log(`Server up and listening on port ${app.get("port")}`)
+);

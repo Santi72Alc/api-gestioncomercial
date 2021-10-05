@@ -1,34 +1,17 @@
-const mariadb = require("mariadb");
+const mongoose = require("mongoose");
 const { DATABASE } = require("./config");
 
-const { 
-	DB_URL_CONNECTION, 
-	DB_HOST, 
-	DB_PORT, 
-	DB_NAME, 
-	DB_USER, 
-	DB_PASSWORD 
-} = DATABASE;
+const { DB_HOST, DB_PORT, DB_TYPE, DB_NAME } = DATABASE;
 
-let db;
-
-if (DB_URL_CONNECTION)
-	db = mariadb.createPool({ socketPath: DB_URL_CONNECTION });
-else
-	db = mariadb.createPool({
-		host: DB_HOST,
-		port: DB_PORT,
-		database: DB_NAME,
-		user: DB_USER,
-		password: DB_PASSWORD,
-		waitForConnections: true
+mongoose
+	.connect(`${DB_TYPE}://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
+		heartbeatFrequencyMS: 3000
+	})
+	.then(db => console.log("DB connected!"))
+	.catch(err => {
+		if (err.reason.type === "Unknown")
+			console.log(
+				"*** Unknown error getting connection to DB. Check MongoDB status, please!"
+			);
+		else console.error(err);
 	});
-// .then(cn => {
-// 	conn = cn;
-// })
-// .catch(error => {
-// 	if (error.code === "ECONNREFUSED")
-// 		throw new Error("Can't access to DB, please check SQL service!");
-// });
-
-module.exports = Object.freeze({ db });

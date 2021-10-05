@@ -1,8 +1,8 @@
 const { Router } = require("express");
 
-const app = Router();
+const router = Router();
 
-app.get("/info", (req, res) => {
+router.get("/info", (req, res) => {
 	res.status(200).json({
 		ok: true,
 		message: {
@@ -14,4 +14,4 @@ app.get("/info", (req, res) => {
 	});
 });
 
-module.exports = app;
+module.exports = router;

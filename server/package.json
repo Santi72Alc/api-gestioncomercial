@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "API server to 'Gestion Comercial'",
+  "description": "API server for 'Gestion Comercial'",
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",

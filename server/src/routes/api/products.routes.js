@@ -4,7 +4,8 @@ const {
   getRecordById,
   createNewRecord,
   editRecordById,
-  deleteRecordById
+  deleteRecordById,
+  getRecordByReference
 } = require('../../controlers/product.controler')
 
 const router = Router()
@@ -36,5 +37,12 @@ router.put('/:id', editRecordById)
  * Delete a record by id
  */
 router.delete('/:id', deleteRecordById)
+
+/**
+ * GET
+ * Get a record by reference
+ */
+router.delete('/:reference', getRecordByReference)
+
 
 module.exports = router

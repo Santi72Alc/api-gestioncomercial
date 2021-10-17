@@ -153,10 +153,39 @@ async function deleteRecordById(req, res) {
   }
 }
 
+
+const getRecordByReference = async (req, res) => {
+  const { reference } = req.params
+
+  try {
+    const record = await Products.find({ reference })
+    if (record) {
+      return res.status(200).json({
+        ok: true,
+        data: record,
+        message: `reference found`
+      })
+    }
+    return res.status(404).json({
+      ok: false,
+      message: `Reference not found`
+    })
+  } catch (error) {
+    const message = `*** ${tableName} table. Searching record by reference. ERROR. ***`
+    console.error(message, error)
+    res.status(500).json({
+      ok: false,
+      message
+    })
+  }
+
+}
+
 module.exports = {
   getAllRecords,
   getRecordById,
   createNewRecord,
   editRecordById,
-  deleteRecordById
+  deleteRecordById,
+  getRecordByReference
 }

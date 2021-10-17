@@ -155,8 +155,8 @@ async function deleteRecordById(req, res) {
 
 
 const getRecordByQuery = async (req, res) => {
-  const { search } = req.query
-  if (!search)
+  const { text } = req.query
+  if (!text)
     return res.status(400).json({
       ok: false,
       message: 'Bad request. Search empty'
@@ -166,10 +166,10 @@ const getRecordByQuery = async (req, res) => {
     const records = await Products.find({
       $or: [
         {
-          reference: { $regex: `${search}` }
+          reference: { $regex: `${text}` }
         },
         {
-          name: { $regex: `${search}` }
+          name: { $regex: `${text}` }
         }
       ]
     })
@@ -182,7 +182,7 @@ const getRecordByQuery = async (req, res) => {
     }
     return res.status(404).json({
       ok: false,
-      message: `No records found`
+      message: `No records found with [${text}] text in reference or name`
     })
   } catch (error) {
     const message = `*** ${tableName} table. Searching record by reference. ERROR. ***`

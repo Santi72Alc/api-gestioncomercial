@@ -154,21 +154,35 @@ async function deleteRecordById(req, res) {
 }
 
 
-const getRecordByReference = async (req, res) => {
-  const { reference } = req.params
+const getRecordByQuery = async (req, res) => {
+  const { search } = req.query
+  if (!search)
+    return res.status(400).json({
+      ok: false,
+      message: 'Bad request. Search empty'
+    })
 
   try {
-    const record = await Products.find({ reference })
-    if (record) {
+    const records = await Products.find({
+      $or: [
+        {
+          reference: { $regex: `${search}` }
+        },
+        {
+          name: { $regex: `${search}` }
+        }
+      ]
+    })
+    if (records.length) {
       return res.status(200).json({
         ok: true,
-        data: record,
-        message: `reference found`
+        data: records,
+        message: `${records.length} records found`
       })
     }
     return res.status(404).json({
       ok: false,
-      message: `Reference not found`
+      message: `No records found`
     })
   } catch (error) {
     const message = `*** ${tableName} table. Searching record by reference. ERROR. ***`
@@ -187,5 +201,5 @@ module.exports = {
   createNewRecord,
   editRecordById,
   deleteRecordById,
-  getRecordByReference
+  getRecordByQuery
 }
